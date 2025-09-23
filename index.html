@@ -1,2 +1,2673 @@
-This file contains the content from paste.txt (UUID: f1bf24df-8e1b-4dbc-beb3-df21b42bb4b8)
-Placeholder content for demonstration purposes.
+ ```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOCKARA | AI Drug Discovery</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://3Dmol.org/build/3Dmol-min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #f4f8fc;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            color: #333;
+            line-height: 1.6;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        body.dark-mode {
+            background: #121212;
+            color: #e0e0e0;
+        }
+        .ui-root {
+            display: flex;
+            min-height: 100vh;
+        }
+        /* Sidebar Styles */
+        .sidebar {
+            width: 240px;
+            background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem 1rem 1rem;
+            box-shadow: 4px 0 25px rgba(26, 115, 232, 0.15);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+        body.dark-mode .sidebar {
+            background: linear-gradient(135deg, #2c3e50 0%, #1a1a2e 100%);
+            box-shadow: 4px 0 25px rgba(0, 0, 0, 0.3);
+        }
+        .sidebar .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 2.5rem;
+            text-align: center;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .sidebar nav {
+            flex: 1;
+            width: 100%;
+            margin-bottom: 2rem;
+        }
+        .sidebar nav a {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 1.1rem;
+            padding: 12px 20px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        .sidebar nav a:hover,
+        .sidebar nav a.active {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            transform: translateX(5px);
+        }
+        body.dark-mode .sidebar nav a:hover,
+        body.dark-mode .sidebar nav a.active {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .sidebar nav a i {
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+        .sidebar-footer {
+            padding: 1.5rem 1rem;
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.7);
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: auto;
+        }
+        body.dark-mode .sidebar-footer {
+            border-top-color: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.5);
+        }
+        /* Main Content Styles */
+        main {
+            flex: 1;
+            margin-left: 240px;
+            background: #f4f8fc;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background 0.3s ease;
+        }
+        body.dark-mode main {
+            background: #1e1e1e;
+        }
+        /* Header Styles */
+        header {
+            background: #fff;
+            padding: 1.2rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 18px rgba(26, 115, 232, 0.12);
+            position: sticky;
+            top: 0;
+            z-index: 90;
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+        }
+        body.dark-mode header {
+            background: #2d2d2d;
+            box-shadow: 0 2px 18px rgba(0, 0, 0, 0.3);
+        }
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .header-title h1 {
+            font-size: 1.8rem;
+            color: #1a73e8;
+            font-weight: 700;
+        }
+        body.dark-mode .header-title h1 {
+            color: #4da6ff;
+        }
+        .badge {
+            background: linear-gradient(90deg, #4CAF50, #2196F3);
+            color: #fff;
+            border-radius: 50px;
+            padding: 0.4rem 1.2rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 10px rgba(76, 175, 80, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        body.dark-mode .badge {
+            box-shadow: 0 2px 10px rgba(76, 175, 80, 0.4);
+            background: linear-gradient(90deg, #2ecc71, #3498db);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+        }
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: #1a73e8;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        .theme-toggle:hover {
+            background: rgba(26, 115, 232, 0.1);
+        }
+        body.dark-mode .theme-toggle {
+            color: #4da6ff;
+        }
+        body.dark-mode .theme-toggle:hover {
+            background: rgba(77, 166, 255, 0.2);
+        }
+        .search-container {
+            position: relative;
+        }
+        .search-container input[type="search"] {
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 50px;
+            padding: 0.6rem 1.2rem 0.6rem 2.5rem;
+            font-size: 0.95rem;
+            outline: none;
+            width: 280px;
+            transition: all 0.3s ease;
+            color: #333;
+        }
+        body.dark-mode .search-container input[type="search"] {
+            background: #2d2d2d;
+            border-color: #444;
+            color: #e0e0e0;
+        }
+        .search-container input[type="search"]:focus {
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+        }
+        body.dark-mode .search-container input[type="search"]:focus {
+            border-color: #4da6ff;
+            box-shadow: 0 0 0 3px rgba(77, 166, 255, 0.3);
+        }
+        .search-container i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+        body.dark-mode .search-container i {
+            color: #a0a0a0;
+        }
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            cursor: pointer;
+        }
+        .user-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid rgba(76, 175, 80, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        body.dark-mode .user-avatar {
+            background: #333;
+            border-color: rgba(76, 175, 80, 0.3);
+        }
+        .user-avatar:hover {
+            transform: scale(1.05);
+        }
+        .user-name {
+            font-weight: 500;
+            color: #333;
+        }
+        body.dark-mode .user-name {
+            color: #e0e0e0;
+        }
+        .profile-dropdown {
+            position: absolute;
+            top: 55px;
+            right: 0;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            padding: 1rem;
+            min-width: 200px;
+            display: none;
+            z-index: 1000;
+            animation: slideDown 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        body.dark-mode .profile-dropdown {
+            background: #252525;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .profile-dropdown.active {
+            display: block;
+        }
+        .profile-item {
+            padding: 0.8rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+        body.dark-mode .profile-item {
+            color: #e0e0e0;
+        }
+        .profile-item:hover {
+            background: #f1f5f9;
+        }
+        body.dark-mode .profile-item:hover {
+            background: #333;
+        }
+        .profile-divider {
+            height: 1px;
+            background: #e2e8f0;
+            margin: 0.5rem 0;
+        }
+        body.dark-mode .profile-divider {
+            background: #444;
+        }
+        .profile-badge {
+            background: #1a73e8;
+            color: white;
+            font-size: 0.7rem;
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            margin-left: auto;
+        }
+        body.dark-mode .profile-badge {
+            background: #4da6ff;
+        }
+        /* Panel Styles */
+        .panel {
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 10px 36px rgba(26, 115, 232, 0.08);
+            min-width: 360px;
+            max-width: 1200px;
+            animation: fadeInUp 0.8s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        body.dark-mode .panel {
+            background: rgba(30, 30, 30, 0.8);
+            box-shadow: 0 10px 36px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .panel h2 {
+            font-size: 1.8rem;
+            color: #1a73e8;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f1f5f9;
+        }
+        body.dark-mode .panel h2 {
+            color: #4da6ff;
+            border-bottom-color: #333;
+        }
+        /* Form Styles */
+        .grid-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2.5rem;
+            margin-bottom: 2rem;
+            align-items: end;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group label {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #1a73e8;
+            margin-bottom: 0.8rem;
+            display: block;
+            letter-spacing: 0.5px;
+        }
+        body.dark-mode .form-group label {
+            color: #4da6ff;
+        }
+        .form-group input[type="file"],
+        .form-group select {
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            font-size: 1rem;
+            background: #f8fafc;
+            color: #1a73e8;
+            transition: all 0.3s ease;
+        }
+        body.dark-mode .form-group input[type="file"],
+        body.dark-mode .form-group select {
+            background: #2d2d2d;
+            border-color: #444;
+            color: #4da6ff;
+        }
+        .form-group input[type="file"]:focus,
+        .form-group select:focus {
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+        }
+        body.dark-mode .form-group input[type="file"]:focus,
+        body.dark-mode .form-group select:focus {
+            border-color: #4da6ff;
+            box-shadow: 0 0 0 3px rgba(77, 166, 255, 0.3);
+        }
+        .run-btn {
+            background: linear-gradient(90deg, #1a73e8 40%, #4CAF50 100%);
+            color: #fff;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 50px;
+            padding: 0.9rem 2.5rem;
+            font-weight: 600;
+            box-shadow: 0 4px 15px rgba(26, 115, 232, 0.2);
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+        }
+        .run-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        .run-btn:hover::before {
+            left: 100%;
+        }
+        .run-btn:hover {
+            background: linear-gradient(90deg, #0d47a1 30%, #388E3C 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(26, 115, 232, 0.3);
+        }
+        .run-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        /* Results Panel */
+        .result-panel {
+            background: #f8fafc;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 6px 22px rgba(131, 228, 255, 0.15);
+            margin-top: 2rem;
+            animation: fadeIn 0.8s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        body.dark-mode .result-panel {
+            background: rgba(30, 30, 30, 0.8);
+            box-shadow: 0 6px 22px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        #binding-score {
+            font-weight: 700;
+            color: #2E7D32;
+            font-size: 1.4rem;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: rgba(46, 125, 50, 0.1);
+            border-radius: 12px;
+            text-align: center;
+            border-left: 4px solid #2E7D32;
+            transition: all 0.3s ease;
+        }
+        body.dark-mode #binding-score {
+            background: rgba(46, 125, 50, 0.2);
+            color: #81c784;
+        }
+        /* Viewer Styles */
+        .viewer-container {
+            margin: 2rem 0;
+        }
+        .viewer-tabs {
+            display: flex;
+            margin-bottom: 1.5rem;
+            background: #f1f5f9;
+            border-radius: 12px;
+            padding: 0.5rem;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        body.dark-mode .viewer-tabs {
+            background: #2d2d2d;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .viewer-tab {
+            padding: 0.8rem 1.5rem;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #64748b;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        body.dark-mode .viewer-tab {
+            color: #a0a0a0;
+        }
+        .viewer-tab.active {
+            background: #1a73e8;
+            color: #fff;
+            font-weight: 600;
+        }
+        body.dark-mode .viewer-tab.active {
+            background: #4da6ff;
+        }
+        .viewer-tab:hover:not(.active) {
+            background: #e2e8f0;
+            color: #1a73e8;
+        }
+        body.dark-mode .viewer-tab:hover:not(.active) {
+            background: #3a3a3a;
+            color: #4da6ff;
+        }
+        .viewer-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin: 2rem 0;
+        }
+        @media (max-width: 992px) {
+            .viewer-row {
+                grid-template-columns: 1fr;
+            }
+        }
+        .viewer-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        body.dark-mode .viewer-card {
+            background: rgba(37, 37, 37, 0.8);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .viewer-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+        body.dark-mode .viewer-card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+        .viewer-card h4 {
+            font-size: 1.3rem;
+            color: #1a73e8;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        body.dark-mode .viewer-card h4 {
+            color: #4da6ff;
+        }
+        .viewer {
+            width: 100%;
+            height: 450px;
+            border-radius: 12px;
+            background: #fff;
+            box-shadow: 0 4px 15px rgba(26, 115, 232, 0.1);
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        body.dark-mode .viewer {
+            background: #1e1e1e;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .viewer-controls {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        body.dark-mode .viewer-controls {
+            background: rgba(45, 45, 45, 0.9);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .viewer-controls button {
+            background: rgba(26, 115, 232, 0.15);
+            color: #1a73e8;
+            border: 1px solid rgba(26, 115, 232, 0.3);
+            border-radius: 6px;
+            padding: 6px 12px;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+        .viewer-controls button:hover {
+            background: rgba(26, 115, 232, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(26, 115, 232, 0.2);
+        }
+        .viewer-controls button.active {
+            background: rgba(76, 175, 80, 0.2);
+            border-color: rgba(76, 175, 80, 0.4);
+            color: #4CAF50;
+        }
+        body.dark-mode .viewer-controls button {
+            color: #4da6ff;
+            border-color: rgba(77, 166, 255, 0.3);
+        }
+        body.dark-mode .viewer-controls button.active {
+            color: #81c784;
+            border-color: rgba(129, 199, 132, 0.4);
+        }
+        .file-info {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            backdrop-filter: blur(5px);
+            transition: background 0.3s ease;
+        }
+        body.dark-mode .file-info {
+            background: rgba(30, 30, 30, 0.8);
+        }
+        /* Binding Pockets Section */
+        .binding-pockets {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: #e3f2fd;
+            border-radius: 16px;
+            border-left: 4px solid #1a73e8;
+            box-shadow: 0 4px 15px rgba(26, 115, 232, 0.1);
+            transition: background 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        body.dark-mode .binding-pockets {
+            background: rgba(26, 43, 60, 0.8);
+            border-left-color: #4da6ff;
+            box-shadow: 0 4px 15px rgba(77, 166, 255, 0.2);
+            border: 1px solid rgba(77, 166, 255, 0.1);
+        }
+        .binding-pockets h4 {
+            font-size: 1.3rem;
+            color: #1a73e8;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        body.dark-mode .binding-pockets h4 {
+            color: #4da6ff;
+        }
+        .pocket-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        .pocket-item {
+            background: #fff;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border-left: 3px solid #ff6b6b;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        body.dark-mode .pocket-item {
+            background: rgba(37, 37, 37, 0.8);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .pocket-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+        body.dark-mode .pocket-item:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+        .pocket-item.pocket-1 { border-left-color: #ff6b6b; }
+        .pocket-item.pocket-2 { border-left-color: #4ecdc4; }
+        .pocket-item.pocket-3 { border-left-color: #45b7d1; }
+        .pocket-item h5 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1a73e8;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        body.dark-mode .pocket-item h5 {
+            color: #4da6ff;
+        }
+        .pocket-score {
+            display: inline-block;
+            background: #e8f5e8;
+            color: #2E7D32;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-left: 10px;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        body.dark-mode .pocket-score {
+            background: rgba(46, 125, 50, 0.3);
+            color: #81c784;
+        }
+        .pocket-details {
+            font-size: 0.95rem;
+            color: #475569;
+            margin: 1rem 0;
+            line-height: 1.6;
+        }
+        body.dark-mode .pocket-details {
+            color: #b0b0b0;
+        }
+        .pocket-details strong {
+            color: #1a73e8;
+        }
+        body.dark-mode .pocket-details strong {
+            color: #4da6ff;
+        }
+        .focus-btn {
+            background: rgba(26, 115, 232, 0.15);
+            color: #1a73e8;
+            border: 1px solid rgba(26, 115, 232, 0.3);
+            border-radius: 8px;
+            padding: 0.6rem 1.2rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(5px);
+        }
+        .focus-btn:hover {
+            background: rgba(26, 115, 232, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(26, 115, 232, 0.2);
+        }
+        body.dark-mode .focus-btn {
+            color: #4da6ff;
+            border-color: rgba(77, 166, 255, 0.3);
+        }
+        /* Interaction Details */
+        .interaction-details {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: #f3e5f5;
+            border-radius: 16px;
+            border-left: 4px solid #9c27b0;
+            box-shadow: 0 4px 15px rgba(156, 39, 176, 0.1);
+            transition: background 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        body.dark-mode .interaction-details {
+            background: rgba(42, 27, 42, 0.8);
+            border-left-color: #ba68c8;
+            box-shadow: 0 4px 15px rgba(186, 104, 200, 0.2);
+            border: 1px solid rgba(186, 104, 200, 0.1);
+        }
+        .interaction-details h4 {
+            font-size: 1.3rem;
+            color: #9c27b0;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        body.dark-mode .interaction-details h4 {
+            color: #ba68c8;
+        }
+        .interaction-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        .interaction-item {
+            background: #fff;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            border-left: 3px solid #ff9800;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        body.dark-mode .interaction-item {
+            background: rgba(37, 37, 37, 0.8);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .interaction-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.12);
+        }
+        body.dark-mode .interaction-item:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+        .interaction-item.hbond { border-left-color: #ff9800; }
+        .interaction-item.hydrophobic { border-left-color: #ff5722; }
+        .interaction-item.salt-bridge { border-left-color: #2196f3; }
+        .interaction-type {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #9c27b0;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        body.dark-mode .interaction-type {
+            color: #ba68c8;
+        }
+        .interaction-details p {
+            font-size: 0.95rem;
+            color: #475569;
+            margin: 0.5rem 0;
+            line-height: 1.6;
+        }
+        body.dark-mode .interaction-details p {
+            color: #b0b0b0;
+        }
+        /* Analysis Results */
+        .analysis-results {
+            margin: 2.5rem 0;
+            padding: 2rem;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border-top: 3px solid #1a73e8;
+            transition: background 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        body.dark-mode .analysis-results {
+            background: rgba(37, 37, 37, 0.8);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border-top-color: #4da6ff;
+            border: 1px solid rgba(77, 166, 255, 0.1);
+        }
+        .analysis-results h3 {
+            font-size: 1.5rem;
+            color: #1a73e8;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            text-align: center;
+            padding-bottom: 1rem;
+            border-bottom: 2px dashed #e2e8f0;
+        }
+        body.dark-mode .analysis-results h3 {
+            color: #4da6ff;
+            border-bottom-color: #333;
+        }
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+        .result-card {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 2px solid #e2e8f0;
+            backdrop-filter: blur(10px);
+        }
+        body.dark-mode .result-card {
+            background: rgba(45, 45, 45, 0.8);
+            border-color: #444;
+        }
+        .result-card:hover {
+            transform: translateY(-5px);
+            border-color: #1a73e8;
+            box-shadow: 0 8px 25px rgba(26, 115, 232, 0.15);
+        }
+        body.dark-mode .result-card:hover {
+            border-color: #4da6ff;
+            box-shadow: 0 8px 25px rgba(77, 166, 255, 0.3);
+        }
+        .result-card h4 {
+            font-size: 1.1rem;
+            color: #475569;
+            font-weight: 500;
+            margin-bottom: 1rem;
+        }
+        body.dark-mode .result-card h4 {
+            color: #a0a0a0;
+        }
+        .result-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1a73e8;
+            margin-bottom: 0.5rem;
+        }
+        body.dark-mode .result-value {
+            color: #4da6ff;
+        }
+        .result-card.docking .result-value { color: #1a73e8; }
+        body.dark-mode .result-card.docking .result-value { color: #4da6ff; }
+        .result-card.admet .result-value { color: #4CAF50; }
+        body.dark-mode .result-card.admet .result-value { color: #81c784; }
+        .result-card.ai .result-value { color: #9c27b0; }
+        body.dark-mode .result-card.ai .result-value { color: #ba68c8; }
+        /* Dockara Bot Suggestions */
+        .dockara-bot {
+            background: linear-gradient(90deg, #b5f9d0, #e3f2fd 80%);
+            color: #004646;
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2.5rem 0;
+            font-weight: 600;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 20px rgba(18, 135, 128, 0.15);
+            border-left: 4px solid #00a884;
+            transition: background 0.3s ease, box-shadow 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 168, 132, 0.2);
+        }
+        body.dark-mode .dockara-bot {
+            background: linear-gradient(90deg, rgba(181, 249, 208, 0.2), rgba(227, 242, 253, 0.2) 80%);
+            color: #80e27e;
+            box-shadow: 0 4px 20px rgba(0, 168, 132, 0.3);
+            border-left-color: #00a884;
+            border: 1px solid rgba(0, 168, 132, 0.1);
+        }
+        .dockara-bot h4 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: #004646;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        body.dark-mode .dockara-bot h4 {
+            color: #80e27e;
+        }
+        .dockara-bot p {
+            line-height: 1.8;
+            font-weight: 500;
+        }
+        /* Download Button */
+        .download-btn {
+            display: inline-block;
+            text-decoration: none;
+            background: linear-gradient(90deg, #1a73e8 30%, #4CAF50 90%);
+            color: #fff;
+            font-weight: 600;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            padding: 1rem 2.5rem;
+            box-shadow: 0 4px 20px rgba(76, 175, 80, 0.3);
+            transition: all 0.3s ease;
+            margin-top: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+        }
+        .download-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        .download-btn:hover::before {
+            left: 100%;
+        }
+        .download-btn:hover {
+            background: linear-gradient(90deg, #0d47a1 20%, #388E3C 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(76, 175, 80, 0.4);
+        }
+        /* Processing Animation */
+        .processing {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 300px;
+            background: #f8fafc;
+            border-radius: 16px;
+            margin: 3rem 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        body.dark-mode .processing {
+            background: rgba(37, 37, 37, 0.8);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #1a73e8;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            margin-bottom: 2rem;
+        }
+        body.dark-mode .spinner {
+            border-color: #333 #333 #333 #4da6ff;
+        }
+        .processing h3 {
+            font-size: 1.5rem;
+            color: #1a73e8;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        body.dark-mode .processing h3 {
+            color: #4da6ff;
+        }
+        .processing p {
+            font-size: 1.1rem;
+            color: #64748b;
+            max-width: 80%;
+            text-align: center;
+        }
+        body.dark-mode .processing p {
+            color: #a0a0a0;
+        }
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animated {
+            animation: fadeInUp 0.8s ease;
+        }
+        /* Table Styles */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+            background: #fff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        body.dark-mode .data-table {
+            background: rgba(37, 37, 37, 0.8);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .data-table th {
+            background: #1a73e8;
+            color: #fff;
+            padding: 1rem;
+            text-align: left;
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        body.dark-mode .data-table th {
+            background: #4da6ff;
+        }
+        .data-table td {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        body.dark-mode .data-table td {
+            border-bottom-color: #333;
+        }
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        .data-table tr:hover {
+            background: #f8fafc;
+        }
+        body.dark-mode .data-table tr:hover {
+            background: rgba(60, 60, 60, 0.6);
+        }
+        .status-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .status-completed {
+            background: #e8f5e8;
+            color: #2E7D32;
+        }
+        body.dark-mode .status-completed {
+            background: rgba(46, 125, 50, 0.3);
+            color: #81c784;
+        }
+        .status-running {
+            background: #e3f2fd;
+            color: #1565C0;
+        }
+        body.dark-mode .status-running {
+            background: rgba(21, 101, 192, 0.3);
+            color: #64b5f6;
+        }
+        .status-pending {
+            background: #fff3e0;
+            color: #E65100;
+        }
+        body.dark-mode .status-pending {
+            background: rgba(230, 81, 0, 0.3);
+            color: #ffab40;
+        }
+        .action-btn {
+            background: rgba(26, 115, 232, 0.15);
+            color: #1a73e8;
+            border: 1px solid rgba(26, 115, 232, 0.3);
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+        .action-btn:hover {
+            background: rgba(26, 115, 232, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(26, 115, 232, 0.2);
+        }
+        body.dark-mode .action-btn {
+            color: #4da6ff;
+            border-color: rgba(77, 166, 255, 0.3);
+        }
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .panel {
+                margin: 1.5rem;
+                padding: 1.5rem;
+            }
+        }
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 70px;
+                padding: 2rem 0.5rem 1rem;
+            }
+            .sidebar .logo span,
+            .sidebar nav a span {
+                display: none;
+            }
+            .sidebar .logo {
+                justify-content: center;
+            }
+            .sidebar nav a {
+                justify-content: center;
+                padding: 15px;
+            }
+            .sidebar nav a i {
+                margin: 0;
+            }
+            main {
+                margin-left: 70px;
+            }
+            .header-actions {
+                gap: 0.8rem;
+            }
+            .search-container input[type="search"] {
+                width: 200px;
+            }
+            .user-name {
+                display: none;
+            }
+        }
+        @media (max-width: 768px) {
+            .grid-form {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            .viewer-row {
+                grid-template-columns: 1fr;
+            }
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+            .pocket-list,
+            .interaction-list {
+                grid-template-columns: 1fr;
+            }
+            .search-container input[type="search"] {
+                width: 180px;
+            }
+        }
+        @media (max-width: 576px) {
+            header {
+                padding: 1rem;
+            }
+            .header-title h1 {
+                font-size: 1.5rem;
+            }
+            .search-container input[type="search"] {
+                width: 150px;
+                padding: 0.5rem 1rem 0.5rem 2rem;
+                font-size: 0.9rem;
+            }
+            .panel {
+                margin: 1rem;
+                padding: 1rem;
+            }
+            .viewer {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="ui-root">
+        <aside class="sidebar">
+            <div class="logo">
+                <span>🧬</span>
+                <span>Dockara</span>
+            </div>
+            <nav>
+                <a href="#" class="active" data-tab="dashboard">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" data-tab="upload">
+                    <i class="fas fa-upload"></i>
+                    <span>Upload</span>
+                </a>
+                <a href="#" data-tab="tasks">
+                    <i class="fas fa-tasks"></i>
+                    <span>Tasks</span>
+                </a>
+                <a href="#" data-tab="reports">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Reports</span>
+                </a>
+                <a href="#" data-tab="help">
+                    <i class="fas fa-question-circle"></i>
+                    <span>Help</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                AI-Powered Drug Discovery Platform
+            </div>
+        </aside>
+        <main>
+            <header>
+                <div class="header-title">
+                    <h1>DOCKARA</h1>
+                    <span class="badge">
+                        <i class="fas fa-robot"></i>
+                        DockaraBot
+                    </span>
+                </div>
+                <div class="header-actions">
+                    <div class="search-container">
+                        <i class="fas fa-search"></i>
+                        <input type="search" placeholder="Search tasks..." id="search-input" />
+                    </div>
+                    <button class="theme-toggle" id="theme-toggle">
+                        <i class="fas fa-moon"></i>
+                    </button>
+                    <div class="user-profile" id="user-profile">
+                        <span class="user-name">Dr. Smith</span>
+                        <img class="user-avatar" src="https://api.dicebear.com/7.x/adventurer/svg?seed=chemist" alt="Dockara" />
+                        <div class="profile-dropdown" id="profile-dropdown">
+                            <div class="profile-item" onclick="handleProfileOption('profile')">
+                                <i class="fas fa-user"></i>
+                                <span>My Profile</span>
+                            </div>
+                            <div class="profile-item" onclick="handleProfileOption('settings')">
+                                <i class="fas fa-cog"></i>
+                                <span>Settings</span>
+                            </div>
+                            <div class="profile-item" onclick="handleProfileOption('preferences')">
+                                <i class="fas fa-sliders-h"></i>
+                                <span>Preferences</span>
+                            </div>
+                            <div class="profile-divider"></div>
+                            <div class="profile-item" onclick="handleProfileOption('documentation')">
+                                <i class="fas fa-book"></i>
+                                <span>Documentation</span>
+                                <span class="profile-badge">New</span>
+                            </div>
+                            <div class="profile-item" onclick="handleProfileOption('help')">
+                                <i class="fas fa-question-circle"></i>
+                                <span>Help Center</span>
+                            </div>
+                            <div class="profile-item" onclick="handleProfileOption('tutorials')">
+                                <i class="fas fa-video"></i>
+                                <span>Tutorials</span>
+                            </div>
+                            <div class="profile-divider"></div>
+                            <div class="profile-item" onclick="handleProfileOption('billing')">
+                                <i class="fas fa-credit-card"></i>
+                                <span>Billing</span>
+                            </div>
+                            <div class="profile-item" onclick="handleProfileOption('support')">
+                                <i class="fas fa-headset"></i>
+                                <span>Support</span>
+                            </div>
+                            <div class="profile-divider"></div>
+                            <div class="profile-item" onclick="handleProfileOption('signout')">
+                                <i class="fas fa-sign-out-alt"></i>
+                                <span>Sign Out</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            <!-- Dashboard Tab -->
+            <section id="dashboard-tab" class="panel animated">
+                <h2>Dashboard Overview</h2>
+                <div class="results-grid">
+                    <div class="result-card">
+                        <h4>Recent Activity</h4>
+                        <div class="result-value">4</div>
+                        <p>Completed tasks this week</p>
+                    </div>
+                    <div class="result-card docking">
+                        <h4>Avg. Binding Score</h4>
+                        <div class="result-value">-7.8</div>
+                        <p>kcal/mol</p>
+                    </div>
+                    <div class="result-card admet">
+                        <h4>ADMET Success Rate</h4>
+                        <div class="result-value">92%</div>
+                        <p>of compounds</p>
+                    </div>
+                    <div class="result-card ai">
+                        <h4>AI Prediction Accuracy</h4>
+                        <div class="result-value">87%</div>
+                        <p>success rate</p>
+                    </div>
+                </div>
+                <div class="analysis-results">
+                    <h3>Recent Analyses</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Task Name</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                <th>Score</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Docking Analysis</td>
+                                <td><span class="status-badge status-completed">Completed</span></td>
+                                <td>2024-01-15</td>
+                                <td>-8.2 kcal/mol</td>
+                                <td><button class="action-btn" onclick="loadTask(1)">View</button></td>
+                            </tr>
+                            <tr>
+                                <td>ADMET Prediction</td>
+                                <td><span class="status-badge status-completed">Completed</span></td>
+                                <td>2024-01-14</td>
+                                <td>92%</td>
+                                <td><button class="action-btn" onclick="loadTask(2)">View</button></td>
+                            </tr>
+                            <tr>
+                                <td>AI-Based Analysis</td>
+                                <td><span class="status-badge status-running">Running</span></td>
+                                <td>2024-01-16</td>
+                                <td>-</td>
+                                <td><button class="action-btn" onclick="loadTask(3)">View</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            <!-- Upload Tab -->
+            <section id="upload-tab" class="panel animated" style="display: none;">
+                <h2>Molecular Analysis</h2>
+                <form id="dockara-form" class="grid-form">
+                    <div class="form-group">
+                        <label>Ligand File (.mol, .sdf, .pdb)
+                            <input type="file" id="ligand-file" accept=".mol,.sdf,.pdb" required>
+                        </label>
+                        <label>Protein File (.pdb)
+                            <input type="file" id="protein-file" accept=".pdb" required>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>Analysis Type
+                            <select id="task-select" required>
+                                <option value="docking">Molecular Docking</option>
+                                <option value="admet">ADMET Prediction</option>
+                                <option value="ai_analysis">AI-Based Analysis</option>
+                            </select>
+                        </label>
+                        <button type="submit" class="run-btn">
+                            <i class="fas fa-rocket"></i>
+                            Run Analysis
+                        </button>
+                    </div>
+                </form>
+                <div id="processing-panel" class="processing" style="display: none;">
+                    <div class="spinner"></div>
+                    <h3>Processing Your Request</h3>
+                    <p>Our AI is analyzing your molecular structures. This may take 1-2 minutes depending on complexity.</p>
+                </div>
+                <div id="result-panel" class="result-panel" style="display: none;">
+                    <div id="binding-score"></div>
+                    <!-- 3D Viewers Tabs -->
+                    <div class="viewer-tabs">
+                        <button class="viewer-tab active" data-target="separate-view">
+                            <i class="fas fa-columns"></i>
+                            Separate Views
+                        </button>
+                        <button class="viewer-tab" data-target="complex-view">
+                            <i class="fas fa-cube"></i>
+                            Complex View
+                        </button>
+                        <button class="viewer-tab" data-target="binding-view">
+                            <i class="fas fa-microscope"></i>
+                            Binding Analysis
+                        </button>
+                    </div>
+                    <!-- Separate Views -->
+                    <div id="separate-view" class="tab-content active">
+                        <div class="viewer-row">
+                            <div class="viewer-card">
+                                <h4><i class="fas fa-dna"></i> Protein 3D Structure</h4>
+                                <div class="viewer-controls">
+                                    <button onclick="resetProteinView()">
+                                        <i class="fas fa-redo"></i> Reset
+                                    </button>
+                                    <button onclick="toggleProteinStyle()">
+                                        <i class="fas fa-paint-brush"></i> Style
+                                    </button>
+                                    <button onclick="highlightBindingPockets()">
+                                        <i class="fas fa-search"></i> Find Pockets
+                                    </button>
+                                </div>
+                                <div id="protein3d" class="viewer"></div>
+                                <div class="file-info" id="protein-file-info">No protein file loaded</div>
+                            </div>
+                            <div class="viewer-card">
+                                <h4><i class="fas fa-pills"></i> Ligand 3D Structure</h4>
+                                <div class="viewer-controls">
+                                    <button onclick="resetLigandView()">
+                                        <i class="fas fa-redo"></i> Reset
+                                    </button>
+                                    <button onclick="toggleLigandStyle()">
+                                        <i class="fas fa-paint-brush"></i> Style
+                                    </button>
+                                </div>
+                                <div id="ligand3d" class="viewer"></div>
+                                <div class="file-info" id="ligand-file-info">No ligand file loaded</div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Complex View -->
+                    <div id="complex-view" class="tab-content">
+                        <div class="viewer-card">
+                            <h4><i class="fas fa-atom"></i> Protein-Ligand Complex</h4>
+                            <div class="viewer-controls">
+                                <button onclick="resetComplexView()">
+                                    <i class="fas fa-redo"></i> Reset
+                                </button>
+                                <button onclick="toggleComplexStyle()">
+                                    <i class="fas fa-paint-brush"></i> Style
+                                </button>
+                                <button onclick="focusOnBindingSite()">
+                                    <i class="fas fa-bullseye"></i> Focus Site
+                                </button>
+                            </div>
+                            <div id="complex3d" class="viewer"></div>
+                            <div class="file-info">Protein-Ligand Complex Visualization</div>
+                        </div>
+                        <div class="binding-pockets">
+                            <h4><i class="fas fa-archive"></i> Identified Binding Pockets</h4>
+                            <div class="pocket-list" id="pockets-list">
+                                <div class="pocket-item pocket-1">
+                                    <h5>Active Site <span class="pocket-score">95%</span></h5>
+                                    <div class="pocket-details">
+                                        <strong>Residues:</strong> ASP123, GLU156, HIS45<br>
+                                        <strong>Size:</strong> Large<br>
+                                        <strong>Predicted Affinity:</strong> High
+                                    </div>
+                                    <button class="focus-btn" onclick="focusOnPocket(1)">
+                                        <i class="fas fa-search"></i> Focus on Pocket
+                                    </button>
+                                </div>
+                                <div class="pocket-item pocket-2">
+                                    <h5>Allosteric Site 1 <span class="pocket-score">78%</span></h5>
+                                    <div class="pocket-details">
+                                        <strong>Residues:</strong> TYR89, PHE201, LEU189<br>
+                                        <strong>Size:</strong> Medium<br>
+                                        <strong>Predicted Affinity:</strong> Medium
+                                    </div>
+                                    <button class="focus-btn" onclick="focusOnPocket(2)">
+                                        <i class="fas fa-search"></i> Focus on Pocket
+                                    </button>
+                                </div>
+                                <div class="pocket-item pocket-3">
+                                    <h5>Allosteric Site 2 <span class="pocket-score">65%</span></h5>
+                                    <div class="pocket-details">
+                                        <strong>Residues:</strong> ARG56, LYS78, SER92<br>
+                                        <strong>Size:</strong> Small<br>
+                                        <strong>Predicted Affinity:</strong> Low-Medium
+                                    </div>
+                                    <button class="focus-btn" onclick="focusOnPocket(3)">
+                                        <i class="fas fa-search"></i> Focus on Pocket
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Binding Analysis View -->
+                    <div id="binding-view" class="tab-content">
+                        <div class="viewer-card">
+                            <h4><i class="fas fa-flask"></i> Binding Site Analysis</h4>
+                            <div class="viewer-controls">
+                                <button onclick="resetBindingView()">
+                                    <i class="fas fa-redo"></i> Reset
+                                </button>
+                                <button onclick="showInteractions()">
+                                    <i class="fas fa-exchange-alt"></i> Show Interactions
+                                </button>
+                                <button onclick="hideInteractions()">
+                                    <i class="fas fa-eye-slash"></i> Hide Interactions
+                                </button>
+                            </div>
+                            <div id="binding3d" class="viewer"></div>
+                            <div class="file-info">Detailed Binding Interactions</div>
+                        </div>
+                        <div class="interaction-details">
+                            <h4><i class="fas fa-exchange-alt"></i> Molecular Interactions</h4>
+                            <div class="interaction-list" id="interaction-list">
+                                <div class="interaction-item hbond">
+                                    <div class="interaction-type">
+                                        <i class="fas fa-link"></i> Hydrogen Bond
+                                    </div>
+                                    <p><strong>Donor:</strong> Ligand O1</p>
+                                    <p><strong>Acceptor:</strong> ASP123</p>
+                                    <p><strong>Distance:</strong> 2.8Å</p>
+                                    <p><strong>Strength:</strong> Strong</p>
+                                </div>
+                                <div class="interaction-item hbond">
+                                    <div class="interaction-type">
+                                        <i class="fas fa-link"></i> Hydrogen Bond
+                                    </div>
+                                    <p><strong>Donor:</strong> Ligand N2</p>
+                                    <p><strong>Acceptor:</strong> GLU156</p>
+                                    <p><strong>Distance:</strong> 3.1Å</p>
+                                    <p><strong>Strength:</strong> Medium</p>
+                                </div>
+                                <div class="interaction-item hydrophobic">
+                                    <div class="interaction-type">
+                                        <i class="fas fa-oil-can"></i> Hydrophobic Interaction
+                                    </div>
+                                    <p><strong>Ligand Atom:</strong> C6</p>
+                                    <p><strong>Protein Residue:</strong> PHE201</p>
+                                    <p><strong>Distance:</strong> 4.2Å</p>
+                                </div>
+                                <div class="interaction-item hydrophobic">
+                                    <div class="interaction-type">
+                                        <i class="fas fa-oil-can"></i> Hydrophobic Interaction
+                                    </div>
+                                    <p><strong>Ligand Atom:</strong> C8</p>
+                                    <p><strong>Protein Residue:</strong> VAL124</p>
+                                    <p><strong>Distance:</strong> 3.8Å</p>
+                                </div>
+                                <div class="interaction-item salt-bridge">
+                                    <div class="interaction-type">
+                                        <i class="fas fa-bolt"></i> Salt Bridge
+                                    </div>
+                                    <p><strong>Ligand Group:</strong> COO-</p>
+                                    <p><strong>Protein Residue:</strong> HIS45</p>
+                                    <p><strong>Distance:</strong> 3.5Å</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="analysis-results">
+                        <h3>Analysis Results</h3>
+                        <div id="analysis-results-content" class="results-grid">
+                            <!-- Results will be populated here -->
+                        </div>
+                    </div>
+                    <div class="dockara-bot">
+                        <h4><i class="fas fa-lightbulb"></i> DockaraBot Suggestions</h4>
+                        <p id="dockara-suggestions">
+                            The ligand shows strong binding affinity with the target protein. Consider optimizing the R-group at position 3 for improved selectivity. The binding pocket suggests potential for hydrogen bonding with residues ASP123 and GLU156. This compound has excellent potential as a lead candidate.
+                        </p>
+                    </div>
+                    <a id="download-report" class="download-btn" href="#" download>
+                        <i class="fas fa-download"></i>
+                        Download Full Report (PDF)
+                    </a>
+                </div>
+            </section>
+            <!-- Tasks Tab -->
+            <section id="tasks-tab" class="panel animated" style="display: none;">
+                <h2>Analysis Tasks</h2>
+                <div class="search-container" style="margin-bottom: 2rem;">
+                    <i class="fas fa-search"></i>
+                    <input type="search" placeholder="Search tasks..." id="tasks-search" />
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Task Name</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Score</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tasks-table-body">
+                        <tr>
+                            <td>Docking Analysis</td>
+                            <td><span class="status-badge status-completed">Completed</span></td>
+                            <td>2024-01-15</td>
+                            <td>-8.2 kcal/mol</td>
+                            <td><button class="action-btn" onclick="loadTask(1)">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>ADMET Prediction</td>
+                            <td><span class="status-badge status-completed">Completed</span></td>
+                            <td>2024-01-14</td>
+                            <td>92%</td>
+                            <td><button class="action-btn" onclick="loadTask(2)">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>AI-Based Analysis</td>
+                            <td><span class="status-badge status-running">Running</span></td>
+                            <td>2024-01-16</td>
+                            <td>-</td>
+                            <td><button class="action-btn" onclick="loadTask(3)">View</button></td>
+                        </tr>
+                        <tr>
+                            <td>Docking Analysis</td>
+                            <td><span class="status-badge status-pending">Pending</span></td>
+                            <td>2024-01-17</td>
+                            <td>-</td>
+                            <td><button class="action-btn" onclick="loadTask(4)">View</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+            <!-- Reports Tab -->
+            <section id="reports-tab" class="panel animated" style="display: none;">
+                <h2>Reports & Analytics</h2>
+                <div class="results-grid">
+                    <div class="result-card docking">
+                        <h4>Docking Performance</h4>
+                        <div class="result-value">-7.8</div>
+                        <p>Avg. Binding Score (kcal/mol)</p>
+                        <p><strong>Best:</strong> -12.3 kcal/mol</p>
+                        <p><strong>Worst:</strong> -3.2 kcal/mol</p>
+                    </div>
+                    <div class="result-card admet">
+                        <h4>ADMET Success Rate</h4>
+                        <div class="result-value">89%</div>
+                        <p>Average Score</p>
+                        <p><strong>High Success:</strong> 78%</p>
+                        <p><strong>Medium Success:</strong> 18%</p>
+                    </div>
+                    <div class="result-card ai">
+                        <h4>AI Prediction Accuracy</h4>
+                        <div class="result-value">87%</div>
+                        <p>Success Rate</p>
+                        <p><strong>Clinical Trials:</strong> 65%</p>
+                        <p><strong>Patent Success:</strong> 92%</p>
+                    </div>
+                    <div class="result-card">
+                        <h4>Total Analyses</h4>
+                        <div class="result-value">24</div>
+                        <p>Completed this month</p>
+                        <p><strong>Docking:</strong> 12</p>
+                        <p><strong>ADMET:</strong> 8</p>
+                    </div>
+                </div>
+                <div class="analysis-results">
+                    <h3>Recent Reports</h3>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Report Name</th>
+                                <th>Type</th>
+                                <th>Date</th>
+                                <th>Score</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Aspirin-COX2 Docking Report</td>
+                                <td>Docking</td>
+                                <td>2024-01-15</td>
+                                <td>-8.2 kcal/mol</td>
+                                <td>
+                                    <button class="action-btn" style="margin-right: 10px;">
+                                        <i class="fas fa-download"></i> Download
+                                    </button>
+                                    <button class="action-btn">
+                                        <i class="fas fa-eye"></i> View
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Atorvastatin-ADMET Report</td>
+                                <td>ADMET</td>
+                                <td>2024-01-14</td>
+                                <td>92%</td>
+                                <td>
+                                    <button class="action-btn" style="margin-right: 10px;">
+                                        <i class="fas fa-download"></i> Download
+                                    </button>
+                                    <button class="action-btn">
+                                        <i class="fas fa-eye"></i> View
+                                    </button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Oseltamivir-AI Analysis</td>
+                                <td>AI Analysis</td>
+                                <td>2024-01-16</td>
+                                <td>87%</td>
+                                <td>
+                                    <button class="action-btn" style="margin-right: 10px;">
+                                        <i class="fas fa-download"></i> Download
+                                    </button>
+                                    <button class="action-btn">
+                                        <i class="fas fa-eye"></i> View
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            <!-- Help Tab -->
+            <section id="help-tab" class="panel animated" style="display: none;">
+                <h2>Help & Documentation</h2>
+                <div class="analysis-results">
+                    <h3><i class="fas fa-rocket"></i> Getting Started</h3>
+                    <ol style="padding-left: 2rem; margin: 1.5rem 0; line-height: 2;">
+                        <li>Upload your ligand file (.mol, .sdf, .pdb format)</li>
+                        <li>Upload your protein file (.pdb format)</li>
+                        <li>Select the type of analysis you want to perform</li>
+                        <li>Click "Run Analysis" to start the analysis</li>
+                        <li>Explore the 3D visualizations and analysis results</li>
+                        <li>Download comprehensive reports for further study</li>
+                    </ol>
+                </div>
+                <div class="analysis-results">
+                    <h3><i class="fas fa-cube"></i> 3D Viewer Guide</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin: 1.5rem 0;">
+                        <div>
+                            <h4><i class="fas fa-columns"></i> Separate Views</h4>
+                            <p>View protein and ligand structures independently with customizable visualization styles.</p>
+                            <ul style="padding-left: 1.5rem; margin-top: 1rem;">
+                                <li>Click and drag to rotate</li>
+                                <li>Mouse wheel to zoom</li>
+                                <li>Right-click and drag to pan</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4><i class="fas fa-atom"></i> Complex View</h4>
+                            <p>See protein-ligand complex with binding pockets highlighted and identified.</p>
+                            <ul style="padding-left: 1.5rem; margin-top: 1rem;">
+                                <li>Click "Find Pockets" to identify potential binding sites</li>
+                                <li>Use "Focus Site" to zoom to active site</li>
+                                <li>Toggle between visualization styles</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4><i class="fas fa-flask"></i> Binding Analysis</h4>
+                            <p>Detailed view of molecular interactions at the binding site with interaction mapping.</p>
+                            <ul style="padding-left: 1.5rem; margin-top: 1rem;">
+                                <li>View hydrogen bonds, hydrophobic interactions, salt bridges</li>
+                                <li>See exact distances and strengths</li>
+                                <li>Toggle interaction visibility</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="analysis-results">
+                    <h3><i class="fas fa-file-alt"></i> File Format Requirements</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin: 1.5rem 0;">
+                        <div>
+                            <h4><i class="fas fa-pills"></i> Ligand Files</h4>
+                            <p><strong>Supported formats:</strong> .mol, .sdf, .pdb</p>
+                            <p><strong>Maximum size:</strong> 10MB</p>
+                            <p><strong>Recommendations:</strong> Ensure all atoms and bonds are properly defined</p>
+                        </div>
+                        <div>
+                            <h4><i class="fas fa-dna"></i> Protein Files</h4>
+                            <p><strong>Required format:</strong> .pdb</p>
+                            <p><strong>Maximum size:</strong> 50MB</p>
+                            <p><strong>Recommendations:</strong> Remove water molecules unless specifically needed</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="dockara-bot">
+                    <h4><i class="fas fa-robot"></i> Need More Help?</h4>
+                    <p>Our AI assistant is here to help! If you have any questions about using DOCKARA, interpreting results, or need technical support, don't hesitate to contact us.</p>
+                    <button class="download-btn" style="margin-top: 1.5rem;" onclick="alert('Support ticket created! Our team will contact you within 24 hours.')">
+                        <i class="fas fa-headset"></i> Contact Support
+                    </button>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script>
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = themeToggle.querySelector('i');
+        
+        themeToggle.addEventListener('click', function() {
+            document.body.classList.toggle('dark-mode');
+            
+            if (document.body.classList.contains('dark-mode')) {
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+            } else {
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+            }
+        });
+        
+        // Profile dropdown functionality
+        const userProfile = document.getElementById('user-profile');
+        const profileDropdown = document.getElementById('profile-dropdown');
+        
+        // Toggle profile dropdown
+        userProfile.addEventListener('click', function(e) {
+            e.stopPropagation();
+            profileDropdown.classList.toggle('active');
+        });
+        
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!userProfile.contains(e.target)) {
+                profileDropdown.classList.remove('active');
+            }
+        });
+        
+        // Handle profile option clicks
+        function handleProfileOption(option) {
+            profileDropdown.classList.remove('active');
+            
+            switch(option) {
+                case 'profile':
+                    alert('Opening your profile page...\nHere you can view and edit your personal information, research interests, and account details.');
+                    break;
+                case 'settings':
+                    alert('Opening settings page...\nCustomize your DOCKARA experience with notification preferences, default analysis settings, and display options.');
+                    break;
+                case 'preferences':
+                    alert('Opening preferences page...\nSet your preferred analysis parameters, visualization defaults, and report generation options.');
+                    break;
+                case 'documentation':
+                    alert('Opening documentation in new tab...\nAccess comprehensive guides, API documentation, and tutorials for all DOCKARA features.');
+                    window.open('https://docs.dockara.ai', '_blank');
+                    break;
+                case 'help':
+                    alert('Opening help center...\nFind answers to frequently asked questions, troubleshooting guides, and best practices.');
+                    break;
+                case 'tutorials':
+                    alert('Opening video tutorials...\nWatch step-by-step guides on using DOCKARA for various drug discovery workflows.');
+                    break;
+                case 'billing':
+                    alert('Opening billing information...\nView your subscription plan, payment history, and update your payment method.');
+                    break;
+                case 'support':
+                    alert('Opening support ticket system...\nContact our technical support team for assistance with any issues or questions.');
+                    break;
+                case 'signout':
+                    if (confirm('Are you sure you want to sign out?')) {
+                        alert('You have been signed out successfully!\nThank you for using DOCKARA AI Drug Discovery Platform.');
+                        // In a real app, this would redirect to login page
+                        // window.location.href = '/login';
+                    }
+                    break;
+                default:
+                    alert('Feature coming soon!');
+            }
+        }
+        
+        // Tab navigation
+        document.querySelectorAll('nav a').forEach(tab => {
+            tab.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('nav a').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                const tabId = this.getAttribute('data-tab');
+                document.querySelectorAll('section').forEach(section => {
+                    section.style.display = 'none';
+                });
+                document.getElementById(tabId + '-tab').style.display = 'block';
+            });
+        });
+        // 3D View Tabs
+        document.querySelectorAll('.viewer-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.viewer-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                const target = this.getAttribute('data-target');
+                document.getElementById(target).classList.add('active');
+            });
+        });
+        // Global variables for 3D viewers
+        let proteinViewer = null;
+        let ligandViewer = null;
+        let complexViewer = null;
+        let bindingViewer = null;
+        let currentProteinStyle = 'cartoon';
+        let currentLigandStyle = 'stick';
+        let currentComplexStyle = 'combined';
+        let bindingPockets = [];
+        let interactions = [];
+        // Initialize viewers when DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            initProteinViewer();
+            initLigandViewer();
+            initComplexViewer();
+            initBindingViewer();
+        });
+        // Initialize protein 3D viewer
+        function initProteinViewer() {
+            const element = document.getElementById('protein3d');
+            const config = { backgroundColor: 'white' };
+            proteinViewer = $3Dmol.createViewer(element, config);
+        }
+        // Initialize ligand 3D viewer
+        function initLigandViewer() {
+            const element = document.getElementById('ligand3d');
+            const config = { backgroundColor: 'white' };
+            ligandViewer = $3Dmol.createViewer(element, config);
+        }
+        // Initialize complex 3D viewer
+        function initComplexViewer() {
+            const element = document.getElementById('complex3d');
+            const config = { backgroundColor: 'white' };
+            complexViewer = $3Dmol.createViewer(element, config);
+        }
+        // Initialize binding site 3D viewer
+        function initBindingViewer() {
+            const element = document.getElementById('binding3d');
+            const config = { backgroundColor: 'white' };
+            bindingViewer = $3Dmol.createViewer(element, config);
+        }
+        // Reset protein view
+        function resetProteinView() {
+            if (proteinViewer) {
+                proteinViewer.zoomTo();
+                proteinViewer.render();
+                proteinViewer.zoom(1.2, 1000);
+            }
+        }
+        // Reset ligand view
+        function resetLigandView() {
+            if (ligandViewer) {
+                ligandViewer.zoomTo();
+                ligandViewer.render();
+                ligandViewer.zoom(1.2, 1000);
+            }
+        }
+        // Reset complex view
+        function resetComplexView() {
+            if (complexViewer) {
+                complexViewer.zoomTo();
+                complexViewer.render();
+                complexViewer.zoom(1.2, 1000);
+            }
+        }
+        // Reset binding view
+        function resetBindingView() {
+            if (bindingViewer) {
+                bindingViewer.zoomTo();
+                bindingViewer.render();
+                bindingViewer.zoom(1.2, 1000);
+            }
+        }
+        // Toggle protein visualization style
+        function toggleProteinStyle() {
+            if (!proteinViewer) return;
+            proteinViewer.removeAllModels();
+            if (currentProteinStyle === 'cartoon') {
+                currentProteinStyle = 'stick';
+            } else if (currentProteinStyle === 'stick') {
+                currentProteinStyle = 'sphere';
+            } else {
+                currentProteinStyle = 'cartoon';
+            }
+            // Re-add the model with new style if we have protein data
+            const proteinFileInput = document.getElementById('protein-file');
+            if (proteinFileInput.files.length > 0) {
+                const file = proteinFileInput.files[0];
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    const data = ev.target.result;
+                    proteinViewer.addModel(data, getExtension(file.name));
+                    if (currentProteinStyle === 'cartoon') {
+                        proteinViewer.setStyle({}, { cartoon: { color: 'spectrum' } });
+                    } else if (currentProteinStyle === 'stick') {
+                        proteinViewer.setStyle({}, { stick: {} });
+                    } else {
+                        proteinViewer.setStyle({}, { sphere: { radius: 0.5 } });
+                    }
+                    proteinViewer.zoomTo();
+                    proteinViewer.render();
+                    proteinViewer.zoom(1.2, 1000);
+                };
+                reader.readAsText(file);
+            }
+        }
+        // Toggle ligand visualization style
+        function toggleLigandStyle() {
+            if (!ligandViewer) return;
+            ligandViewer.removeAllModels();
+            if (currentLigandStyle === 'stick') {
+                currentLigandStyle = 'sphere';
+            } else if (currentLigandStyle === 'sphere') {
+                currentLigandStyle = 'line';
+            } else {
+                currentLigandStyle = 'stick';
+            }
+            // Re-add the model with new style if we have ligand data
+            const ligandFileInput = document.getElementById('ligand-file');
+            if (ligandFileInput.files.length > 0) {
+                const file = ligandFileInput.files[0];
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    const data = ev.target.result;
+                    ligandViewer.addModel(data, getExtension(file.name));
+                    if (currentLigandStyle === 'stick') {
+                        ligandViewer.setStyle({}, { stick: { colorscheme: 'greenCarbon' } });
+                    } else if (currentLigandStyle === 'sphere') {
+                        ligandViewer.setStyle({}, { sphere: { radius: 0.5, colorscheme: 'greenCarbon' } });
+                    } else {
+                        ligandViewer.setStyle({}, { line: { colorscheme: 'greenCarbon' } });
+                    }
+                    ligandViewer.zoomTo();
+                    ligandViewer.render();
+                    ligandViewer.zoom(1.2, 1000);
+                };
+                reader.readAsText(file);
+            }
+        }
+        // Toggle complex visualization style
+        function toggleComplexStyle() {
+            if (!complexViewer) return;
+            complexViewer.removeAllModels();
+            if (currentComplexStyle === 'combined') {
+                currentComplexStyle = 'surface';
+            } else if (currentComplexStyle === 'surface') {
+                currentComplexStyle = 'wireframe';
+            } else {
+                currentComplexStyle = 'combined';
+            }
+            renderComplexView();
+        }
+        // Get file extension for 3Dmol
+        function getExtension(filename) {
+            const ext = filename.split('.').pop().toLowerCase();
+            if (ext === 'mol') return 'sdf';
+            if (ext === 'pdb') return 'pdb';
+            if (ext === 'sdf') return 'sdf';
+            return ext;
+        }
+        // Highlight binding pockets in protein
+        function highlightBindingPockets() {
+            if (!proteinViewer) return;
+            proteinViewer.removeAllModels();
+            const proteinFileInput = document.getElementById('protein-file');
+            if (proteinFileInput.files.length > 0) {
+                const file = proteinFileInput.files[0];
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    const data = ev.target.result;
+                    const model = proteinViewer.addModel(data, getExtension(file.name));
+                    // Show protein in cartoon style
+                    proteinViewer.setStyle({}, { cartoon: { color: 'lightgrey' } });
+                    // Simulate binding pockets
+                    bindingPockets = [
+                        { id: 1, name: 'Active Site', residues: 'ASP123, GLU156, HIS45', size: 'Large', score: 0.95, color: 'red' },
+                        { id: 2, name: 'Allosteric Site 1', residues: 'TYR89, PHE201, LEU189', size: 'Medium', score: 0.78, color: 'yellow' },
+                        { id: 3, name: 'Allosteric Site 2', residues: 'ARG56, LYS78, SER92', size: 'Small', score: 0.65, color: 'blue' }
+                    ];
+                    // Highlight pockets with different colors
+                    bindingPockets.forEach(pocket => {
+                        let color = '#FF0000';
+                        if (pocket.color === 'yellow') color = '#FFD700';
+                        if (pocket.color === 'blue') color = '#1E90FF';
+                        if (pocket.id === 1) {
+                            proteinViewer.setStyle({resn: ['ASP', 'GLU', 'HIS']}, {stick: {color: color, radius: 0.3}});
+                        } else if (pocket.id === 2) {
+                            proteinViewer.setStyle({resn: ['TYR', 'PHE', 'LEU']}, {stick: {color: color, radius: 0.3}});
+                        } else {
+                            proteinViewer.setStyle({resn: ['ARG', 'LYS', 'SER']}, {stick: {color: color, radius: 0.3}});
+                        }
+                    });
+                    proteinViewer.zoomTo();
+                    proteinViewer.render();
+                    proteinViewer.zoom(1.2, 1000);
+                    // Update pockets list in complex view
+                    updatePocketsList();
+                };
+                reader.readAsText(file);
+            }
+        }
+        // Update pockets list in UI
+        function updatePocketsList() {
+            const pocketsList = document.getElementById('pockets-list');
+            pocketsList.innerHTML = '';
+            bindingPockets.forEach(pocket => {
+                const pocketDiv = document.createElement('div');
+                pocketDiv.className = `pocket-item pocket-${pocket.id}`;
+                pocketDiv.innerHTML = `
+                    <h5>${pocket.name} <span class="pocket-score">${(pocket.score * 100).toFixed(0)}%</span></h5>
+                    <div class="pocket-details">
+                        <strong>Residues:</strong> ${pocket.residues}<br>
+                        <strong>Size:</strong> ${pocket.size}<br>
+                        <strong>Predicted Affinity:</strong> ${pocket.score > 0.8 ? 'High' : pocket.score > 0.6 ? 'Medium' : 'Low-Medium'}
+                    </div>
+                    <button class="focus-btn" onclick="focusOnPocket(${pocket.id})">
+                        <i class="fas fa-search"></i> Focus on Pocket
+                    </button>
+                `;
+                pocketsList.appendChild(pocketDiv);
+            });
+        }
+        // Focus on specific pocket
+        function focusOnPocket(pocketId) {
+            if (!complexViewer) return;
+            const pocket = bindingPockets.find(p => p.id === pocketId);
+            if (!pocket) return;
+            // Reset and render complex view
+            renderComplexView();
+            // Focus on the specific pocket
+            let selector = {};
+            if (pocketId === 1) {
+                selector = {resn: ['ASP', 'GLU', 'HIS']};
+            } else if (pocketId === 2) {
+                selector = {resn: ['TYR', 'PHE', 'LEU']};
+            } else {
+                selector = {resn: ['ARG', 'LYS', 'SER']};
+            }
+            complexViewer.zoomTo(selector);
+            complexViewer.render();
+        }
+        // Focus on binding site
+        function focusOnBindingSite() {
+            if (!complexViewer) return;
+            // Focus on active site (pocket 1)
+            const selector = {resn: ['ASP', 'GLU', 'HIS']};
+            complexViewer.zoomTo(selector);
+            complexViewer.render();
+        }
+        // Show interactions in binding view
+        function showInteractions() {
+            if (!bindingViewer) return;
+            // Reset binding viewer
+            bindingViewer.removeAllModels();
+            const proteinFileInput = document.getElementById('protein-file');
+            const ligandFileInput = document.getElementById('ligand-file');
+            if (proteinFileInput.files.length > 0 && ligandFileInput.files.length > 0) {
+                // Load protein
+                const proteinFile = proteinFileInput.files[0];
+                const proteinReader = new FileReader();
+                proteinReader.onload = function(ev) {
+                    const proteinData = ev.target.result;
+                    bindingViewer.addModel(proteinData, getExtension(proteinFile.name));
+                    // Load ligand
+                    const ligandFile = ligandFileInput.files[0];
+                    const ligandReader = new FileReader();
+                    ligandReader.onload = function(ev2) {
+                        const ligandData = ev2.target.result;
+                        bindingViewer.addModel(ligandData, getExtension(ligandFile.name));
+                        // Style protein (focus on binding site)
+                        bindingViewer.setStyle({resn: ['ASP', 'GLU', 'HIS']}, {stick: {color: 'red', radius: 0.3}});
+                        bindingViewer.setStyle({not: {resn: ['ASP', 'GLU', 'HIS']}}, {cartoon: {color: 'lightgrey'}});
+                        // Style ligand
+                        bindingViewer.setStyle({model: 1}, {stick: {colorscheme: 'greenCarbon'}});
+                        // Define interactions
+                        interactions = [
+                            { type: 'Hydrogen Bond', donor: 'Ligand O1', acceptor: 'ASP123', distance: '2.8Å', color: 'yellow' },
+                            { type: 'Hydrogen Bond', donor: 'Ligand N2', acceptor: 'GLU156', distance: '3.1Å', color: 'yellow' },
+                            { type: 'Hydrophobic', ligand: 'Ligand C6', protein: 'PHE201', distance: '4.2Å', color: 'orange' },
+                            { type: 'Hydrophobic', ligand: 'Ligand C8', protein: 'VAL124', distance: '3.8Å', color: 'orange' },
+                            { type: 'Salt Bridge', ligand: 'Ligand COO-', protein: 'HIS45', distance: '3.5Å', color: 'blue' }
+                        ];
+                        // Update interaction details
+                        updateInteractionDetails();
+                        // Zoom to binding site
+                        bindingViewer.zoomTo({resn: ['ASP', 'GLU', 'HIS']});
+                        bindingViewer.render();
+                    };
+                    ligandReader.readAsText(ligandFile);
+                };
+                proteinReader.readAsText(proteinFile);
+            }
+        }
+        // Hide interactions in binding view
+        function hideInteractions() {
+            if (!bindingViewer) return;
+            renderBindingView();
+        }
+        // Update interaction details in UI
+        function updateInteractionDetails() {
+            const interactionList = document.getElementById('interaction-list');
+            interactionList.innerHTML = '';
+            interactions.forEach(interaction => {
+                const interactionDiv = document.createElement('div');
+                interactionDiv.className = `interaction-item ${interaction.type.toLowerCase().replace(' ', '-')}`;
+                let icon = 'fa-link';
+                if (interaction.type === 'Hydrophobic') icon = 'fa-oil-can';
+                if (interaction.type === 'Salt Bridge') icon = 'fa-bolt';
+                let html = `
+                    <div class="interaction-type">
+                        <i class="fas ${icon}"></i> ${interaction.type}
+                    </div>
+                `;
+                if (interaction.type === 'Hydrogen Bond') {
+                    html += `
+                        <p><strong>Donor:</strong> ${interaction.donor}</p>
+                        <p><strong>Acceptor:</strong> ${interaction.acceptor}</p>
+                        <p><strong>Distance:</strong> ${interaction.distance}</p>
+                        <p><strong>Strength:</strong> ${interaction.distance <= '3.0Å' ? 'Strong' : 'Medium'}</p>
+                    `;
+                } else if (interaction.type === 'Hydrophobic') {
+                    html += `
+                        <p><strong>Ligand Atom:</strong> ${interaction.ligand}</p>
+                        <p><strong>Protein Residue:</strong> ${interaction.protein}</p>
+                        <p><strong>Distance:</strong> ${interaction.distance}</p>
+                    `;
+                } else if (interaction.type === 'Salt Bridge') {
+                    html += `
+                        <p><strong>Ligand Group:</strong> ${interaction.ligand}</p>
+                        <p><strong>Protein Residue:</strong> ${interaction.protein}</p>
+                        <p><strong>Distance:</strong> ${interaction.distance}</p>
+                    `;
+                }
+                interactionDiv.innerHTML = html;
+                interactionList.appendChild(interactionDiv);
+            });
+        }
+        // Render complex view
+        function renderComplexView() {
+            if (!complexViewer) return;
+            complexViewer.removeAllModels();
+            const proteinFileInput = document.getElementById('protein-file');
+            const ligandFileInput = document.getElementById('ligand-file');
+            if (proteinFileInput.files.length > 0 && ligandFileInput.files.length > 0) {
+                // Load protein
+                const proteinFile = proteinFileInput.files[0];
+                const proteinReader = new FileReader();
+                proteinReader.onload = function(ev) {
+                    const proteinData = ev.target.result;
+                    complexViewer.addModel(proteinData, getExtension(proteinFile.name));
+                    // Load ligand
+                    const ligandFile = ligandFileInput.files[0];
+                    const ligandReader = new FileReader();
+                    ligandReader.onload = function(ev2) {
+                        const ligandData = ev2.target.result;
+                        complexViewer.addModel(ligandData, getExtension(ligandFile.name));
+                        // Apply style based on currentComplexStyle
+                        if (currentComplexStyle === 'combined') {
+                            // Protein in cartoon, ligand in stick
+                            complexViewer.setStyle({model: 0}, {cartoon: {color: 'spectrum'}});
+                            complexViewer.setStyle({model: 1}, {stick: {colorscheme: 'greenCarbon'}});
+                        } else if (currentComplexStyle === 'surface') {
+                            // Protein surface with ligand stick
+                            complexViewer.setStyle({model: 0}, {surface: {opacity: 0.7, colorscheme: 'hydrophobicity'}});
+                            complexViewer.setStyle({model: 1}, {stick: {colorscheme: 'greenCarbon'}});
+                        } else {
+                            // Wireframe for both
+                            complexViewer.setStyle({model: 0}, {line: {color: 'grey'}});
+                            complexViewer.setStyle({model: 1}, {line: {colorscheme: 'greenCarbon'}});
+                        }
+                        // Highlight binding pockets if they exist
+                        if (bindingPockets.length > 0) {
+                            bindingPockets.forEach(pocket => {
+                                let color = '#FF0000';
+                                if (pocket.color === 'yellow') color = '#FFD700';
+                                if (pocket.color === 'blue') color = '#1E90FF';
+                                if (pocket.id === 1) {
+                                    complexViewer.setStyle({model: 0, resn: ['ASP', 'GLU', 'HIS']}, {stick: {color: color, radius: 0.3}});
+                                } else if (pocket.id === 2) {
+                                    complexViewer.setStyle({model: 0, resn: ['TYR', 'PHE', 'LEU']}, {stick: {color: color, radius: 0.3}});
+                                } else {
+                                    complexViewer.setStyle({model: 0, resn: ['ARG', 'LYS', 'SER']}, {stick: {color: color, radius: 0.3}});
+                                }
+                            });
+                        }
+                        complexViewer.zoomTo();
+                        complexViewer.render();
+                        complexViewer.zoom(1.2, 1000);
+                    };
+                    ligandReader.readAsText(ligandFile);
+                };
+                proteinReader.readAsText(proteinFile);
+            }
+        }
+        // Render binding view
+        function renderBindingView() {
+            if (!bindingViewer) return;
+            bindingViewer.removeAllModels();
+            const proteinFileInput = document.getElementById('protein-file');
+            const ligandFileInput = document.getElementById('ligand-file');
+            if (proteinFileInput.files.length > 0 && ligandFileInput.files.length > 0) {
+                // Load protein
+                const proteinFile = proteinFileInput.files[0];
+                const proteinReader = new FileReader();
+                proteinReader.onload = function(ev) {
+                    const proteinData = ev.target.result;
+                    bindingViewer.addModel(proteinData, getExtension(proteinFile.name));
+                    // Load ligand
+                    const ligandFile = ligandFileInput.files[0];
+                    const ligandReader = new FileReader();
+                    ligandReader.onload = function(ev2) {
+                        const ligandData = ev2.target.result;
+                        bindingViewer.addModel(ligandData, getExtension(ligandFile.name));
+                        // Style protein with focus on binding site
+                        bindingViewer.setStyle({model: 0, resn: ['ASP', 'GLU', 'HIS']}, {stick: {color: 'red'}});
+                        bindingViewer.setStyle({model: 0, not: {resn: ['ASP', 'GLU', 'HIS']}}, {cartoon: {color: 'lightgrey'}});
+                        // Style ligand
+                        bindingViewer.setStyle({model: 1}, {stick: {colorscheme: 'greenCarbon'}});
+                        // Zoom to binding site
+                        bindingViewer.zoomTo({resn: ['ASP', 'GLU', 'HIS']});
+                        bindingViewer.render();
+                    };
+                    ligandReader.readAsText(ligandFile);
+                };
+                proteinReader.readAsText(proteinFile);
+            }
+        }
+        // Form submission
+        document.getElementById('dockara-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const ligandFileInput = document.getElementById('ligand-file');
+            const proteinFileInput = document.getElementById('protein-file');
+            const taskSelect = document.getElementById('task-select');
+            if (ligandFileInput.files.length === 0 || proteinFileInput.files.length === 0) {
+                alert('Please upload both ligand and protein files');
+                return;
+            }
+            // Show processing panel
+            document.getElementById('processing-panel').style.display = 'flex';
+            document.getElementById('result-panel').style.display = 'none';
+            // Load and render protein structure
+            const proteinFile = proteinFileInput.files[0];
+            const proteinReader = new FileReader();
+            proteinReader.onload = function(ev) {
+                const data = ev.target.result;
+                document.getElementById('protein-file-info').textContent = proteinFile.name;
+                proteinViewer.removeAllModels();
+                proteinViewer.addModel(data, getExtension(proteinFile.name));
+                if (currentProteinStyle === 'cartoon') {
+                    proteinViewer.setStyle({}, { cartoon: { color: 'spectrum' } });
+                } else if (currentProteinStyle === 'stick') {
+                    proteinViewer.setStyle({}, { stick: {} });
+                } else {
+                    proteinViewer.setStyle({}, { sphere: { radius: 0.5 } });
+                }
+                proteinViewer.zoomTo();
+                proteinViewer.render();
+                proteinViewer.zoom(1.2, 1000);
+                // Load and render ligand structure
+                const ligandFile = ligandFileInput.files[0];
+                const ligandReader = new FileReader();
+                ligandReader.onload = function(ev2) {
+                    const data2 = ev2.target.result;
+                    document.getElementById('ligand-file-info').textContent = ligandFile.name;
+                    ligandViewer.removeAllModels();
+                    ligandViewer.addModel(data2, getExtension(ligandFile.name));
+                    if (currentLigandStyle === 'stick') {
+                        ligandViewer.setStyle({}, { stick: { colorscheme: 'greenCarbon' } });
+                    } else if (currentLigandStyle === 'sphere') {
+                        ligandViewer.setStyle({}, { sphere: { radius: 0.5, colorscheme: 'greenCarbon' } });
+                    } else {
+                        ligandViewer.setStyle({}, { line: { colorscheme: 'greenCarbon' } });
+                    }
+                    ligandViewer.zoomTo();
+                    ligandViewer.render();
+                    ligandViewer.zoom(1.2, 1000);
+                    // Render complex view
+                    renderComplexView();
+                    // Render binding view
+                    renderBindingView();
+                    // Hide processing panel and show results after 2 seconds
+                    setTimeout(() => {
+                        document.getElementById('processing-panel').style.display = 'none';
+                        document.getElementById('result-panel').style.display = 'block';
+                        // Display results based on task type
+                        const task = taskSelect.value;
+                        displayResults(task);
+                        // Highlight binding pockets
+                        highlightBindingPockets();
+                        // Show interactions
+                        showInteractions();
+                    }, 2000);
+                };
+                ligandReader.readAsText(ligandFile);
+            };
+            proteinReader.readAsText(proteinFile);
+        });
+        // Display results based on task type
+        function displayResults(task) {
+            const bindingScoreElement = document.getElementById('binding-score');
+            const analysisResultsContent = document.getElementById('analysis-results-content');
+            const suggestionsElement = document.getElementById('dockara-suggestions');
+            const downloadReportLink = document.getElementById('download-report');
+            // Clear previous results
+            analysisResultsContent.innerHTML = '';
+            if (task === 'docking') {
+                bindingScoreElement.textContent = 'Binding Score: -8.2 kcal/mol';
+                bindingScoreElement.style.display = 'block';
+                // Create docking results cards
+                const dockingResults = [
+                    { label: 'Binding Energy', value: '-8.2 kcal/mol', color: '#1a73e8' },
+                    { label: 'Ki Value', value: '1.2 μM', color: '#4CAF50' },
+                    { label: 'Hydrogen Bonds', value: '3', color: '#ff9800' },
+                    { label: 'Hydrophobic Interactions', value: '5', color: '#ff5722' },
+                    { label: 'Binding Site', value: 'Active Site', color: '#9c27b0' },
+                    { label: 'Docking Score', value: '8.7/10', color: '#00bcd4' }
+                ];
+                dockingResults.forEach(result => {
+                    const card = document.createElement('div');
+                    card.className = 'result-card docking';
+                    card.innerHTML = `
+                        <h4>${result.label}</h4>
+                        <div class="result-value" style="color: ${result.color}">${result.value}</div>
+                    `;
+                    analysisResultsContent.appendChild(card);
+                });
+                suggestionsElement.textContent = 'The ligand shows strong binding affinity with the target protein. Consider optimizing the R-group at position 3 for improved selectivity. The binding pocket suggests potential for hydrogen bonding with residues ASP123 and GLU156. This compound has excellent potential as a lead candidate.';
+                downloadReportLink.download = 'Docking_Analysis_Report.pdf';
+                downloadReportLink.textContent = '📥 Download Docking Analysis Report (PDF)';
+            } else if (task === 'admet') {
+                bindingScoreElement.style.display = 'none';
+                // Create ADMET results cards
+                const admetResults = [
+                    { label: 'Absorption', value: 'High (92%)', color: '#4CAF50' },
+                    { label: 'Distribution', value: 'Moderate', color: '#2196F3' },
+                    { label: 'Metabolism', value: 'CYP3A4 substrate', color: '#9C27B0' },
+                    { label: 'Excretion', value: 'Renal (75%)', color: '#FF9800' },
+                    { label: 'Toxicity', value: 'Low risk', color: '#F44336' },
+                    { label: 'Bioavailability', value: '85%', color: '#00BCD4' }
+                ];
+                admetResults.forEach(result => {
+                    const card = document.createElement('div');
+                    card.className = 'result-card admet';
+                    card.innerHTML = `
+                        <h4>${result.label}</h4>
+                        <div class="result-value" style="color: ${result.color}">${result.value}</div>
+                    `;
+                    analysisResultsContent.appendChild(card);
+                });
+                suggestionsElement.textContent = 'Excellent ADMET profile detected. The compound shows favorable pharmacokinetic properties for oral administration. Consider slight modifications to the molecular weight to further improve absorption and reduce potential for CYP inhibition. The low toxicity profile makes this compound suitable for further development.';
+                downloadReportLink.download = 'ADMET_Prediction_Report.pdf';
+                downloadReportLink.textContent = '📥 Download ADMET Prediction Report (PDF)';
+            } else { // ai_analysis
+                bindingScoreElement.style.display = 'none';
+                // Create AI analysis results cards
+                const aiResults = [
+                    { label: 'Drug Likeness', value: '87/100', color: '#9C27B0' },
+                    { label: 'Target Specificity', value: '92%', color: '#4CAF50' },
+                    { label: 'Clinical Trial Success', value: '65%', color: '#2196F3' },
+                    { label: 'Synthetic Accessibility', value: 'Moderate', color: '#FF9800' },
+                    { label: 'Patent Landscape', value: 'Low competition', color: '#00BCD4' },
+                    { label: 'AI Confidence', value: '91%', color: '#F44336' }
+                ];
+                aiResults.forEach(result => {
+                    const card = document.createElement('div');
+                    card.className = 'result-card ai';
+                    card.innerHTML = `
+                        <h4>${result.label}</h4>
+                        <div class="result-value" style="color: ${result.color}">${result.value}</div>
+                    `;
+                    analysisResultsContent.appendChild(card);
+                });
+                suggestionsElement.textContent = 'AI analysis suggests this compound has high potential as a lead candidate. Recommended for further in vitro testing. The AI model predicts 87% probability of success in Phase I clinical trials based on structural similarity to approved drugs in the same class. Patent landscape analysis shows low competition in this chemical space.';
+                downloadReportLink.download = 'AI_Analysis_Report.pdf';
+                downloadReportLink.textContent = '📥 Download AI Analysis Report (PDF)';
+            }
+        }
+        // Load task from tasks table
+        function loadTask(taskId) {
+            // Switch to upload tab
+            document.querySelectorAll('nav a').forEach(t => t.classList.remove('active'));
+            document.querySelector('[data-tab="upload"]').classList.add('active');
+            document.querySelectorAll('section').forEach(section => {
+                section.style.display = 'none';
+            });
+            document.getElementById('upload-tab').style.display = 'block';
+            // Show results panel
+            document.getElementById('result-panel').style.display = 'block';
+            // Simulate loading task data
+            if (taskId === 1) {
+                document.getElementById('task-select').value = 'docking';
+                displayResults('docking');
+            } else if (taskId === 2) {
+                document.getElementById('task-select').value = 'admet';
+                displayResults('admet');
+            } else if (taskId === 3) {
+                document.getElementById('task-select').value = 'ai_analysis';
+                displayResults('ai_analysis');
+            }
+            // Initialize viewers with sample data
+            initSampleViewers();
+        }
+        // Initialize sample viewers for demo
+        function initSampleViewers() {
+            // Protein viewer
+            proteinViewer.removeAllModels();
+            proteinViewer.addLabel('Protein Structure', {
+                position: {x: 0, y: 0, z: 0},
+                backgroundColor: '#1a73e8',
+                fontColor: 'white',
+                fontSize: 14
+            });
+            proteinViewer.setStyle({}, {cartoon: {color: 'spectrum'}});
+            proteinViewer.zoomTo();
+            proteinViewer.render();
+            // Ligand viewer
+            ligandViewer.removeAllModels();
+            ligandViewer.addLabel('Ligand Structure', {
+                position: {x: 0, y: 0, z: 0},
+                backgroundColor: '#4CAF50',
+                fontColor: 'white',
+                fontSize: 14
+            });
+            ligandViewer.setStyle({}, {stick: {colorscheme: 'greenCarbon'}});
+            ligandViewer.zoomTo();
+            ligandViewer.render();
+            // Complex viewer
+            complexViewer.removeAllModels();
+            complexViewer.addLabel('Protein-Ligand Complex', {
+                position: {x: 0, y: 0, z: 0},
+                backgroundColor: '#9c27b0',
+                fontColor: 'white',
+                fontSize: 14
+            });
+            complexViewer.setStyle({}, {cartoon: {color: 'spectrum'}});
+            complexViewer.zoomTo();
+            complexViewer.render();
+            // Binding viewer
+            bindingViewer.removeAllModels();
+            bindingViewer.addLabel('Binding Site Analysis', {
+                position: {x: 0, y: 0, z: 0},
+                backgroundColor: '#ff9800',
+                fontColor: 'white',
+                fontSize: 14
+            });
+            bindingViewer.setStyle({}, {cartoon: {color: 'lightgrey'}});
+            bindingViewer.zoomTo();
+            bindingViewer.render();
+            // Simulate binding pockets
+            bindingPockets = [
+                { id: 1, name: 'Active Site', residues: 'ASP123, GLU156, HIS45', size: 'Large', score: 0.95, color: 'red' },
+                { id: 2, name: 'Allosteric Site 1', residues: 'TYR89, PHE201, LEU189', size: 'Medium', score: 0.78, color: 'yellow' },
+                { id: 3, name: 'Allosteric Site 2', residues: 'ARG56, LYS78, SER92', size: 'Small', score: 0.65, color: 'blue' }
+            ];
+            updatePocketsList();
+            // Simulate interactions
+            interactions = [
+                { type: 'Hydrogen Bond', donor: 'Ligand O1', acceptor: 'ASP123', distance: '2.8Å', color: 'yellow' },
+                { type: 'Hydrogen Bond', donor: 'Ligand N2', acceptor: 'GLU156', distance: '3.1Å', color: 'yellow' },
+                { type: 'Hydrophobic', ligand: 'Ligand C6', protein: 'PHE201', distance: '4.2Å', color: 'orange' },
+                { type: 'Hydrophobic', ligand: 'Ligand C8', protein: 'VAL124', distance: '3.8Å', color: 'orange' },
+                { type: 'Salt Bridge', ligand: 'Ligand COO-', protein: 'HIS45', distance: '3.5Å', color: 'blue' }
+            ];
+            updateInteractionDetails();
+        }
+        // Search functionality
+        document.getElementById('search-input').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#tasks-table-body tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+        // Tasks search functionality
+        document.getElementById('tasks-search').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const rows = document.querySelectorAll('#tasks-table-body tr');
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+```
