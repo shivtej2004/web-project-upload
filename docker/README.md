@@ -7,6 +7,8 @@ cd docker
 docker compose up --build
 ```
 
+> Note: The backend service only bind-mounts `backend/app` and `backend/scripts` for development so image-built ML artifacts remain available inside `/app/backend/app/models`.
+
 Backend: http://localhost:8000/docs
 Frontend: http://localhost:5173
 
