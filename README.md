@@ -49,6 +49,14 @@ Production-ready scaffold for AI-driven drug discovery with FastAPI, RDKit, ML t
 
 ## Linux Installation (local, without Docker)
 
+### One-command install (recommended)
+
+```bash
+./scripts/install_all.sh
+```
+
+### Manual steps
+
 1. Create Python environment and install backend deps:
    ```bash
    python3 -m venv .venv
