@@ -1,14 +1,30 @@
 # Deployment
 
-## Local Docker Compose
+## Local Docker Compose (Recommended)
 
 ```bash
 cd docker
 docker compose up --build
 ```
 
-Backend: http://localhost:8000/docs
-Frontend: http://localhost:5173
+This default workflow is ready for final demo/review:
+- Backend model artifacts baked during image build stay available (no backend bind-mount masking).
+- Frontend UI runs in dev mode with live reload.
+
+Backend API docs: http://localhost:8000/docs
+Frontend UI: http://localhost:5173
+
+## Optional: Backend live-edit mounts (development only)
+
+If you want backend code hot-editing, use this temporary override in `docker-compose.yml` under `services.backend`:
+
+```yaml
+volumes:
+  - ../backend/app:/app/backend/app
+  - ../backend/scripts:/app/backend/scripts
+```
+
+Only mount these subpaths (not `../backend:/app/backend`) to avoid hiding image-built model artifacts.
 
 ## Render Deployment
 
