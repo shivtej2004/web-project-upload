@@ -12,7 +12,7 @@ This default workflow is ready for final demo/review:
 - Frontend UI runs in dev mode with live reload.
 
 Backend API docs: http://localhost:8000/docs
-Frontend UI: http://localhost:5173
+Frontend UI: http://localhost (also available at http://localhost:5173)
 
 
 ### Use your local environment variables

@@ -25,6 +25,7 @@ services:
       VINA_SIZE_Z: ${VINA_SIZE_Z:-20.0}
     ports:
       - "8000:8000"
+    restart: unless-stopped
 
   frontend:
     image: node:20-alpine
@@ -33,8 +34,10 @@ services:
     volumes:
       - ../frontend:/app/frontend
     ports:
+      - "80:5173"
       - "5173:5173"
     environment:
       VITE_API_URL: ${VITE_API_URL:-http://localhost:8000}
     depends_on:
       - backend
+    restart: unless-stopped
