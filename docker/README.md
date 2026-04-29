@@ -14,6 +14,22 @@ This default workflow is ready for final demo/review:
 Backend API docs: http://localhost:8000/docs
 Frontend UI: http://localhost:5173
 
+
+### Use your local environment variables
+
+Docker Compose now reads backend/frontend settings from your local shell environment with safe defaults.
+
+Optional setup:
+```bash
+cp ../backend/.env.example ../backend/.env
+set -a; source ../backend/.env; set +a
+```
+
+Then run:
+```bash
+docker compose up --build
+```
+
 ## Optional: Backend live-edit mounts (development only)
 
 If you want backend code hot-editing, use this temporary override in `docker-compose.yml` under `services.backend`:

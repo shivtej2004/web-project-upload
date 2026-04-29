@@ -5,8 +5,24 @@ services:
     build:
       context: ..
       dockerfile: backend/Dockerfile
-    env_file:
-      - ../backend/.env
+    environment:
+      APP_NAME: ${APP_NAME:-Dockara AI Pro}
+      APP_ENV: ${APP_ENV:-development}
+      API_HOST: ${API_HOST:-0.0.0.0}
+      API_PORT: ${API_PORT:-8000}
+      MODEL_PATH: ${MODEL_PATH:-backend/app/models/toxicity_model.pkl}
+      SCALER_PATH: ${SCALER_PATH:-backend/app/models/toxicity_scaler.pkl}
+      DOCKING_TIMEOUT: ${DOCKING_TIMEOUT:-120}
+      DOCKING_OUTPUT_DIR: ${DOCKING_OUTPUT_DIR:-/tmp/docking_runs}
+      VINA_BINARY: ${VINA_BINARY:-vina}
+      OBABEL_BINARY: ${OBABEL_BINARY:-obabel}
+      RECEPTOR_PDBQT: ${RECEPTOR_PDBQT:-/app/backend/data/receptor.pdbqt}
+      VINA_CENTER_X: ${VINA_CENTER_X:-0.0}
+      VINA_CENTER_Y: ${VINA_CENTER_Y:-0.0}
+      VINA_CENTER_Z: ${VINA_CENTER_Z:-0.0}
+      VINA_SIZE_X: ${VINA_SIZE_X:-20.0}
+      VINA_SIZE_Y: ${VINA_SIZE_Y:-20.0}
+      VINA_SIZE_Z: ${VINA_SIZE_Z:-20.0}
     ports:
       - "8000:8000"
 
@@ -19,6 +35,6 @@ services:
     ports:
       - "5173:5173"
     environment:
-      - VITE_API_URL=http://localhost:8000
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:8000}
     depends_on:
       - backend
