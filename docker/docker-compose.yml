@@ -7,6 +7,10 @@ services:
       dockerfile: backend/Dockerfile
     env_file:
       - ../backend/.env
+    volumes:
+      # Mount source for iteration without hiding image-baked model artifacts.
+      - ../backend/app:/app/backend/app
+      - ../backend/scripts:/app/backend/scripts
     ports:
       - "8000:8000"
 
